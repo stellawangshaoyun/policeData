@@ -16,6 +16,8 @@ function App() {
   });
 
   const [table, setTable] = useState<TableItem[] | null>([]);
+  const [zoom, setZoom] = useState(10);
+  const [markers, setMarkers] = useState<[number, number][]>([]);
   const handleLocationChange = (
     latitude: number,
     longitude: number,
@@ -24,26 +26,39 @@ function App() {
     setLocation({ latitude, longitude, postcode });
   };
   useEffect(() => {
-    const fetchData = async () => {
+    const getCrimeData = async () => {
       const data = await getCrimeAtLocation(location);
+      if (data === null) return;
+      const markersData: [number, number][] = [];
+      data.forEach((item) => {
+        markersData.push([
+          Number(item.location.longitude),
+          Number(item.location.latitude),
+        ]);
+      });
       setTable(data);
+      setZoom(14);
+      setMarkers(markersData);
     };
 
-    fetchData();
+    if (location.postcode === null) return;
+    getCrimeData();
   }, [location]);
   return (
-    <>
-      <div>
-        <div className="absolute top-8 left-5 z-50 px-4 sm:px-6 lg:px-8  bg-white rounded">
-          <SearchInput onLocationChange={handleLocationChange} />
-          {table !== null && location.postcode !== null && (
-            <Table postcode={location.postcode} tableData={table} />
-          )}
-        </div>
-
-        <CrimeMap center={[location.longitude, location.latitude]} zoom={11} />
+    <div>
+      <div className="absolute top-8 left-5 z-50 px-4 sm:px-6 lg:px-8 bg-white rounded">
+        <SearchInput onLocationChange={handleLocationChange} />
+        {table !== null && location.postcode !== null && (
+          <Table postcode={location.postcode} tableData={table} />
+        )}
       </div>
-    </>
+
+      <CrimeMap
+        markers={markers}
+        center={[location.longitude, location.latitude]}
+        zoom={zoom}
+      />
+    </div>
   );
 }
 
