@@ -10,6 +10,6 @@ Then, run the development server:
 
 ```bash
 npm run dev
-
+```
 
 Last, add .env file to root please copy the variable in .env.example
