@@ -20,7 +20,6 @@ const CrimeMap: React.FC<MapProps> = ({ center, zoom }) => {
         zoom,
       });
     }
-
   }, [center, zoom]);
 
   useEffect(() => {
